@@ -5,6 +5,10 @@ locals {
     for key, value in module.bootstrap.assets_dist :
     format("##### %s\n%s", key, value)
   ]
+
+  # environment = lookup(aws_instance.controllers[0].tags, "environment")
+  environment = var.additional_node_tags.environment
+
 }
 
 # Secure copy assets to controllers.
@@ -16,10 +20,12 @@ resource "null_resource" "copy-controller-secrets" {
   ]
 
   connection {
-    type    = "ssh"
-    host    = aws_instance.controllers.*.public_ip[count.index]
-    user    = "core"
-    timeout = "15m"
+    type        = "ssh"
+    host        = (var.privacy_status == "public" ? aws_instance.controllers.*.public_ip[count.index] : aws_instance.controllers.*.private_ip[count.index])
+    user        = "core"
+    private_key = file("~/.ssh/id_ecdsa_${local.environment}")
+    certificate = file("~/.ssh/id_ecdsa_${local.environment}-cert.pub")
+    timeout     = "15m"
   }
 
   provisioner "file" {
@@ -43,10 +49,12 @@ resource "null_resource" "bootstrap" {
   ]
 
   connection {
-    type    = "ssh"
-    host    = aws_instance.controllers[0].public_ip
-    user    = "core"
-    timeout = "15m"
+    type        = "ssh"
+    host        = (var.privacy_status == "public" ? aws_instance.controllers[0].public_ip : aws_instance.controllers[0].private_ip)
+    user        = "core"
+    private_key = file("~/.ssh/id_ecdsa_${local.environment}")
+    certificate = file("~/.ssh/id_ecdsa_${local.environment}-cert.pub")
+    timeout     = "15m"
   }
 
   provisioner "remote-exec" {
