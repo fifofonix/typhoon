@@ -17,10 +17,12 @@ resource "aws_route53_record" "apiserver" {
 resource "aws_lb" "nlb" {
   name               = "${var.cluster_name}-nlb"
   load_balancer_type = "network"
-  ip_address_type    = "dualstack"
-  internal           = false
 
-  subnets = aws_subnet.public.*.id
+  ip_address_type = (var.ipv6_networking == "true" ? "dualstack" : "ipv4")
+
+  internal = (var.privacy_status == "private" ? true : false)
+
+  subnets = data.aws_subnets.subnets.ids
 
   enable_cross_zone_load_balancing = true
 }
@@ -63,9 +65,11 @@ resource "aws_lb_listener" "ingress-https" {
 
 # Target group of controllers
 resource "aws_lb_target_group" "controllers" {
-  name        = "${var.cluster_name}-controllers"
-  vpc_id      = aws_vpc.network.id
-  target_type = "instance"
+  name   = "${var.cluster_name}-controllers"
+  vpc_id = data.aws_vpc.network.id
+  # I don't understand why I am having to switch from 'instance' to 'ip' but it
+  # is clear with the ipv4 option that this does not work without this chg...
+  target_type = "ip"
 
   protocol = "TCP"
   port     = 6443
@@ -89,7 +93,7 @@ resource "aws_lb_target_group_attachment" "controllers" {
   count = var.controller_count
 
   target_group_arn = aws_lb_target_group.controllers.arn
-  target_id        = aws_instance.controllers.*.id[count.index]
+  target_id        = (var.privacy_status == "public" ? aws_instance.controllers.*.public_ip[count.index] : aws_instance.controllers.*.private_ip[count.index])
   port             = 6443
 }
 

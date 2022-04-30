@@ -6,7 +6,7 @@ resource "aws_security_group" "controller" {
   name        = "${var.cluster_name}-controller"
   description = "${var.cluster_name} controller security group"
 
-  vpc_id = aws_vpc.network.id
+  vpc_id = data.aws_vpc.network.id
 
   tags = {
     "Name" = "${var.cluster_name}-controller"
@@ -44,7 +44,7 @@ resource "aws_security_group_rule" "controller-ssh" {
   protocol    = "tcp"
   from_port   = 22
   to_port     = 22
-  cidr_blocks = ["0.0.0.0/0"]
+  cidr_blocks = var.ssh_cidr_origins
 }
 
 resource "aws_security_group_rule" "controller-etcd" {
@@ -318,7 +318,7 @@ resource "aws_security_group" "worker" {
   name        = "${var.cluster_name}-worker"
   description = "${var.cluster_name} worker security group"
 
-  vpc_id = aws_vpc.network.id
+  vpc_id = data.aws_vpc.network.id
 
   tags = {
     "Name" = "${var.cluster_name}-worker"
@@ -356,7 +356,7 @@ resource "aws_security_group_rule" "worker-ssh" {
   protocol    = "tcp"
   from_port   = 22
   to_port     = 22
-  cidr_blocks = ["0.0.0.0/0"]
+  cidr_blocks = var.ssh_cidr_origins
 }
 
 resource "aws_security_group_rule" "worker-http" {
@@ -364,8 +364,8 @@ resource "aws_security_group_rule" "worker-http" {
 
   type        = "ingress"
   protocol    = "tcp"
-  from_port   = 80
-  to_port     = 80
+  from_port   = var.worker_nlb_target_http_port
+  to_port     = var.worker_nlb_target_http_port
   cidr_blocks = ["0.0.0.0/0"]
 }
 
@@ -374,8 +374,8 @@ resource "aws_security_group_rule" "worker-https" {
 
   type        = "ingress"
   protocol    = "tcp"
-  from_port   = 443
-  to_port     = 443
+  from_port   = var.worker_nlb_target_https_port
+  to_port     = var.worker_nlb_target_https_port
   cidr_blocks = ["0.0.0.0/0"]
 }
 

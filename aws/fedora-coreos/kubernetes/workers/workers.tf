@@ -52,6 +52,12 @@ resource "aws_autoscaling_group" "workers" {
     value               = "${var.name}-worker"
     propagate_at_launch = true
   }
+
+}
+
+data "aws_iam_instance_profile" "controller_profile" {
+  count = var.instance_profile == null ? 0: 1
+  name  = var.instance_profile
 }
 
 # Worker template
@@ -60,8 +66,19 @@ resource "aws_launch_template" "worker" {
   image_id      = local.ami_id
   instance_type = var.instance_type
 
+  user_data = sensitive(base64gzip(data.ct_config.worker-ignition.rendered))
+
+  iam_instance_profile {
+    name =  var.instance_profile == null ? "" : data.aws_iam_instance_profile.controller_profile[0].name
+  }
+
+  monitoring {
+    enabled = false
+  }
+
   # storage
   ebs_optimized = true
+
   block_device_mappings {
     device_name = "/dev/xvda"
     ebs {
@@ -72,10 +89,9 @@ resource "aws_launch_template" "worker" {
       delete_on_termination = true
     }
   }
-
   # network
   network_interfaces {
-    associate_public_ip_address = true
+    associate_public_ip_address = (var.privacy_status == "public" ? true : false)
     security_groups             = var.security_groups
   }
 
@@ -95,11 +111,13 @@ resource "aws_launch_template" "worker" {
     cpu_credits = var.cpu_credits
   }
   dynamic "instance_market_options" {
-    for_each = var.spot_price > 0 ? [1] : []
+    for_each = var.spot_price == 0 ? toset([]) : toset([1])
     content {
       market_type = "spot"
       spot_options {
-        max_price = var.spot_price
+        instance_interruption_behavior = "terminate"
+        max_price                      = var.spot_price
+        spot_instance_type             = "one-time"
       }
     }
   }
@@ -109,17 +127,44 @@ resource "aws_launch_template" "worker" {
     create_before_destroy = true
     ignore_changes        = [image_id]
   }
+
+  tag_specifications {
+    resource_type = "instance"
+
+    tags = merge(
+      data.aws_default_tags.current.tags,
+      var.node_tags,
+    { Name = "${var.name}-worker" })
+  }
+
+  tag_specifications {
+    resource_type = "volume"
+
+    tags = merge(
+      data.aws_default_tags.current.tags,
+      var.node_tags,
+    { Name = "${var.name}-worker" })
+  }
 }
 
-# Fedora CoreOS worker
-data "ct_config" "worker" {
-  content = templatefile("${path.module}/butane/worker.yaml", {
+data "aws_default_tags" "current" {}
+
+# Worker Ignition config
+data "ct_config" "worker-ignition" {
+  content  = data.template_file.worker-config.rendered
+  strict   = true
+  snippets = var.snippets
+}
+
+# Worker Fedora CoreOS config
+data "template_file" "worker-config" {
+  template = file("${path.module}/butane/worker.yaml")
+
+  vars = {
     kubeconfig             = indent(10, var.kubeconfig)
     ssh_authorized_key     = var.ssh_authorized_key
     cluster_dns_service_ip = cidrhost(var.service_cidr, 10)
     node_labels            = join(",", var.node_labels)
     node_taints            = join(",", var.node_taints)
-  })
-  strict   = true
-  snippets = var.snippets
+  }
 }
