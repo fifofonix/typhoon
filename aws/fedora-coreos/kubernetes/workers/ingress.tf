@@ -1,18 +1,19 @@
 # Target groups of instances for use with load balancers
 
+
 resource "aws_lb_target_group" "workers-http" {
   name        = "${var.name}-workers-http"
   vpc_id      = var.vpc_id
   target_type = "instance"
 
   protocol = "TCP"
-  port     = 80
+  port     = var.target_group_http_port
 
   # HTTP health check for ingress
   health_check {
     protocol = "HTTP"
-    port     = 10254
-    path     = "/healthz"
+    port     = var.target_group_health_port
+    path     = var.target_group_health_uri_path
 
     # NLBs required to use same healthy and unhealthy thresholds
     healthy_threshold   = 3
@@ -29,13 +30,13 @@ resource "aws_lb_target_group" "workers-https" {
   target_type = "instance"
 
   protocol = "TCP"
-  port     = 443
+  port     = var.target_group_https_port
 
   # HTTP health check for ingress
   health_check {
     protocol = "HTTP"
-    port     = 10254
-    path     = "/healthz"
+    port     = var.target_group_health_port
+    path     = var.target_group_health_uri_path
 
     # NLBs required to use same healthy and unhealthy thresholds
     healthy_threshold   = 3

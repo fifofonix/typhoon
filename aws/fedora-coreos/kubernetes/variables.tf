@@ -15,6 +15,80 @@ variable "dns_zone_id" {
   description = "AWS Route53 DNS Zone ID (e.g. Z3PAABBCFAKEC0)"
 }
 
+variable "ipv6_networking" {
+  type        = string
+  description = "Ability to downgrade to IPV4-only networking."
+  default     = "true"
+  validation {
+    condition     = contains(["true", "false"], var.ipv6_networking)
+    error_message = "The ipv6_networking option must be 'true' or 'false'."
+  }
+}
+
+variable "reuse_networking" {
+  type        = string
+  description = "Re-use explicitly specified pre-existing networking (VPC/subnets)"
+  default     = "false"
+}
+
+variable "explicit_vpc_id" {
+  type        = string
+  description = "ID of pre-existing VPC to use."
+  default     = ""
+}
+
+variable "explicit_subnets" {
+  type        = list(string)
+  description = "List of IDs of pre-existing subnets to use."
+  default     = []
+}
+
+variable "privacy_status" {
+  type        = string
+  default     = "public" # | private
+  description = "Whether cluster is publicly facing at all."
+  validation {
+    condition     = contains(["public", "private"], var.privacy_status)
+    error_message = "The privacy_status option must be either 'private' or 'public'."
+  }
+}
+
+variable "ssh_cidr_origins" {
+  type        = list(string)
+  default     = ["0.0.0.0/0"]
+  description = "Permitted Cidr block origins for mgmt access to hosts."
+}
+
+variable "worker_nlb_target_http_port" {
+  type        = number
+  default     = 80
+  description = "NLB Worker target group http port."
+}
+
+variable "worker_nlb_target_https_port" {
+  type        = number
+  default     = 443
+  description = "NLB Worker target group https port."
+}
+
+variable "worker_nlb_target_health_port" {
+  type        = number
+  default     = 10254
+  description = "Target group's instance health check port."
+}
+
+variable "worker_nlb_target_health_uri_path" {
+  type        = string
+  default     = "/healthz"
+  description = "Target group's instance health check port."
+}
+
+variable "instance_profile" {
+  type        = string
+  description = "AWS instance profile (optional), applies to controller and workers."
+  default     = null
+}
+
 # instances
 
 variable "os_stream" {
@@ -171,6 +245,14 @@ variable "worker_node_labels" {
 }
 
 # advanced
+
+variable "additional_node_tags" {
+  type        = map(any)
+  description = "List of additional worker/controller tags"
+  default     = {}
+}
+
+# unofficial, undocumented, unsupported
 
 variable "controller_arch" {
   type        = string
