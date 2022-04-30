@@ -18,12 +18,12 @@ output "ingress_zone_id" {
 # Outputs for worker pools
 
 output "vpc_id" {
-  value       = aws_vpc.network.id
+  value       = data.aws_vpc.network.id
   description = "ID of the VPC for creating worker instances"
 }
 
 output "subnet_ids" {
-  value       = aws_subnet.public.*.id
+  value       = data.aws_subnets.subnets.ids
   description = "List of subnet IDs for creating worker instances"
 }
 
@@ -60,4 +60,3 @@ output "assets_dist" {
   value     = module.bootstrap.assets_dist
   sensitive = true
 }
-
