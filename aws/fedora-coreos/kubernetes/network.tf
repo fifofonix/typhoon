@@ -5,7 +5,8 @@ data "aws_availability_zones" "all" {
 
 resource "aws_vpc" "network" {
   cidr_block                       = var.host_cidr
-  assign_generated_ipv6_cidr_block = true
+  assign_generated_ipv6_cidr_block = (var.ipv6_networking == "true" ? true : false)
+
   enable_dns_support               = true
   enable_dns_hostnames             = true
 
@@ -52,8 +53,9 @@ resource "aws_subnet" "public" {
 
   cidr_block                      = cidrsubnet(var.host_cidr, 4, count.index)
   ipv6_cidr_block                 = cidrsubnet(aws_vpc.network.ipv6_cidr_block, 8, count.index)
+
   map_public_ip_on_launch         = true
-  assign_ipv6_address_on_creation = true
+  assign_ipv6_address_on_creation = (var.ipv6_networking == "true" ? true: false)
 
   tags = {
     "Name" = "${var.cluster_name}-public-${count.index}"
