@@ -15,6 +15,16 @@ variable "dns_zone_id" {
   description = "AWS Route53 DNS Zone ID (e.g. Z3PAABBCFAKEC0)"
 }
 
+variable "ipv6_networking" {
+  type        = string
+  description = "Ability to downgrade to IPV4-only networking."
+  default     = "true"
+  validation {
+    condition     = contains(["true", "false"], var.ipv6_networking)
+    error_message = "The ipv6_networking option must be 'true' or 'false'."
+  }
+}
+
 # instances
 
 variable "controller_count" {

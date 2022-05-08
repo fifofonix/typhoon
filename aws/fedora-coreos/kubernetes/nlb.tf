@@ -17,7 +17,8 @@ resource "aws_route53_record" "apiserver" {
 resource "aws_lb" "nlb" {
   name               = "${var.cluster_name}-nlb"
   load_balancer_type = "network"
-  ip_address_type    = "dualstack"
+  ip_address_type    = (var.ipv6_networking == "true" ? "dualstack" : "ipv4")
+
   internal           = false
 
   subnets = aws_subnet.public.*.id
