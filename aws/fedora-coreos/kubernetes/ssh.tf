@@ -17,7 +17,7 @@ resource "null_resource" "copy-controller-secrets" {
 
   connection {
     type    = "ssh"
-    host    = aws_instance.controllers.*.public_ip[count.index]
+    host    = (var.privacy_status == "public" ? aws_instance.controllers.*.public_ip[count.index] : aws_instance.controllers.*.private_ip[count.index])
     user    = "core"
     timeout = "15m"
   }
@@ -44,7 +44,7 @@ resource "null_resource" "bootstrap" {
 
   connection {
     type    = "ssh"
-    host    = aws_instance.controllers[0].public_ip
+    host    = (var.privacy_status == "public" ? aws_instance.controllers[0].public_ip : aws_instance.controllers[0].private_ip)
     user    = "core"
     timeout = "15m"
   }

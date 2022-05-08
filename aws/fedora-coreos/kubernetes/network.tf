@@ -52,7 +52,7 @@ resource "aws_subnet" "public" {
 
   cidr_block                      = cidrsubnet(var.host_cidr, 4, count.index)
   ipv6_cidr_block                 = cidrsubnet(aws_vpc.network.ipv6_cidr_block, 8, count.index)
-  map_public_ip_on_launch         = true
+  map_public_ip_on_launch         = (var.privacy_status == "public" ? true : false)
   assign_ipv6_address_on_creation = true
 
   tags = {
