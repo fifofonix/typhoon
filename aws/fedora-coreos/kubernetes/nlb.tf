@@ -18,7 +18,7 @@ resource "aws_lb" "nlb" {
   name               = "${var.cluster_name}-nlb"
   load_balancer_type = "network"
   ip_address_type    = "dualstack"
-  internal           = false
+  internal           = (var.privacy_status == "private" ? true : false)
 
   subnets = aws_subnet.public.*.id
 
@@ -89,7 +89,7 @@ resource "aws_lb_target_group_attachment" "controllers" {
   count = var.controller_count
 
   target_group_arn = aws_lb_target_group.controllers.arn
-  target_id        = aws_instance.controllers.*.id[count.index]
+  target_id        = (var.privacy_status == "public" ? aws_instance.controllers.*.public_ip[count.index] : aws_instance.controllers.*.private_ip[count.index])
   port             = 6443
 }
 

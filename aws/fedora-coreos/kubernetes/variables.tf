@@ -15,6 +15,16 @@ variable "dns_zone_id" {
   description = "AWS Route53 DNS Zone ID (e.g. Z3PAABBCFAKEC0)"
 }
 
+variable "privacy_status" {
+  type        = string
+  default     = "public" # | private
+  description = "Whether cluster is publicly facing at all."
+  validation {
+    condition     = contains(["public", "private"], var.privacy_status)
+    error_message = "The privacy_status option must be either 'private' or 'public'."
+  }
+}
+
 # instances
 
 variable "controller_count" {
