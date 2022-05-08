@@ -69,9 +69,8 @@ resource "aws_subnet" "public" {
 
   cidr_block                      = cidrsubnet(var.host_cidr, 4, count.index)
   ipv6_cidr_block                 = cidrsubnet(data.aws_vpc.network.ipv6_cidr_block, 8, count.index)
-
-  map_public_ip_on_launch         = true
   assign_ipv6_address_on_creation = (var.ipv6_networking == "true" ? true: false)
+  map_public_ip_on_launch         = (var.privacy_status == "public" ? true : false)
 
   tags = {
     "Name" = "${var.cluster_name}-public-${count.index}"

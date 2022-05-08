@@ -42,6 +42,16 @@ variable "explicit_subnets" {
   default     = []
 }
 
+variable "privacy_status" {
+  type        = string
+  default     = "public" # | private
+  description = "Whether cluster is publicly facing at all."
+  validation {
+    condition     = contains(["public", "private"], var.privacy_status)
+    error_message = "The privacy_status option must be either 'private' or 'public'."
+  }
+}
+
 # instances
 
 variable "controller_count" {
