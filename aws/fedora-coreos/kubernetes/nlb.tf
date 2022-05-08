@@ -20,7 +20,7 @@ resource "aws_lb" "nlb" {
   ip_address_type    = "dualstack"
   internal           = false
 
-  subnets = aws_subnet.public.*.id
+  subnets = data.aws_subnets.subnets.ids
 
   enable_cross_zone_load_balancing = true
 }
@@ -64,7 +64,7 @@ resource "aws_lb_listener" "ingress-https" {
 # Target group of controllers
 resource "aws_lb_target_group" "controllers" {
   name        = "${var.cluster_name}-controllers"
-  vpc_id      = aws_vpc.network.id
+  vpc_id      = data.aws_vpc.network.id
   target_type = "instance"
 
   protocol = "TCP"

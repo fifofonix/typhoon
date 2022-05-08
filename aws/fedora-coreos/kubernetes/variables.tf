@@ -15,6 +15,24 @@ variable "dns_zone_id" {
   description = "AWS Route53 DNS Zone ID (e.g. Z3PAABBCFAKEC0)"
 }
 
+variable "reuse_networking" {
+  type        = string
+  description = "Re-use explicitly specified pre-existing networking (VPC/subnets)"
+  default     = "false"
+}
+
+variable "explicit_vpc_id" {
+  type        = string
+  description = "ID of pre-existing VPC to use."
+  default     = ""
+}
+
+variable "explicit_subnets" {
+  type        = list(string)
+  description = "List of IDs of pre-existing subnets to use."
+  default     = []
+}
+
 # instances
 
 variable "controller_count" {
