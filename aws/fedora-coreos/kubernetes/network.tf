@@ -8,8 +8,8 @@ resource "aws_vpc" "network" {
   cidr_block                       = var.host_cidr
   assign_generated_ipv6_cidr_block = (var.ipv6_networking == "true" ? true : false)
 
-  enable_dns_support               = true
-  enable_dns_hostnames             = true
+  enable_dns_support   = true
+  enable_dns_hostnames = true
 
   tags = {
     "Name" = var.cluster_name
@@ -69,7 +69,7 @@ resource "aws_subnet" "public" {
 
   cidr_block                      = cidrsubnet(var.host_cidr, 4, count.index)
   ipv6_cidr_block                 = cidrsubnet(data.aws_vpc.network.ipv6_cidr_block, 8, count.index)
-  assign_ipv6_address_on_creation = (var.ipv6_networking == "true" ? true: false)
+  assign_ipv6_address_on_creation = (var.ipv6_networking == "true" ? true : false)
   map_public_ip_on_launch         = (var.privacy_status == "public" ? true : false)
 
   tags = {

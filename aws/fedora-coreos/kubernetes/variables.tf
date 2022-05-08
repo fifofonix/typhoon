@@ -23,6 +23,7 @@ variable "ipv6_networking" {
     condition     = contains(["true", "false"], var.ipv6_networking)
     error_message = "The ipv6_networking option must be 'true' or 'false'."
   }
+}
 
 variable "reuse_networking" {
   type        = string
