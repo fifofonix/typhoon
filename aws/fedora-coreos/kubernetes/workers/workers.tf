@@ -65,6 +65,22 @@ resource "aws_launch_configuration" "worker" {
     create_before_destroy = true
     ignore_changes        = [image_id]
   }
+
+  tag_specifications {
+    resource_type = "instance"
+
+    tags = merge(
+      var.node_tags,
+    { Name = "${var.name}-worker" })
+  }
+
+  tag_specifications {
+    resource_type = "volume"
+
+    tags = merge(
+      var.node_tags,
+    { Name = "${var.name}-worker" })
+  }
 }
 
 # Worker Ignition config
