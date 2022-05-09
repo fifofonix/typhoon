@@ -15,6 +15,12 @@ variable "dns_zone_id" {
   description = "AWS Route53 DNS Zone ID (e.g. Z3PAABBCFAKEC0)"
 }
 
+variable "ssh_cidr_origins" {
+  type        = list(string)
+  default     = ["0.0.0.0/0"]
+  description = "Permitted Cidr block origins for mgmt access to hosts."
+}
+
 # instances
 
 variable "controller_count" {
