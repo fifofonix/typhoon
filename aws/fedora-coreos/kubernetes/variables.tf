@@ -152,6 +152,12 @@ variable "worker_node_labels" {
   default     = []
 }
 
+variable "additional_node_tags" {
+  type        = map(any)
+  description = "List of additional worker/controller tags"
+  default     = {}
+}
+
 # unofficial, undocumented, unsupported
 
 variable "cluster_domain_suffix" {
