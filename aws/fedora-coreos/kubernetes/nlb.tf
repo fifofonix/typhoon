@@ -66,7 +66,9 @@ resource "aws_lb_listener" "ingress-https" {
 resource "aws_lb_target_group" "controllers" {
   name        = "${var.cluster_name}-controllers"
   vpc_id      = aws_vpc.network.id
-  target_type = "instance"
+  # I don't understand why I am having to switch from 'instance' to 'ip' but it
+  # is clear with the ipv4 option that this does not work without this chg...
+  target_type = "ip"
 
   protocol = "TCP"
   port     = 6443
