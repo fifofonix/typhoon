@@ -53,6 +53,12 @@ variable "privacy_status" {
   }
 }
 
+variable "ssh_cidr_origins" {
+  type        = list(string)
+  default     = ["0.0.0.0/0"]
+  description = "Permitted Cidr block origins for mgmt access to hosts."
+}
+
 # instances
 
 variable "controller_count" {
