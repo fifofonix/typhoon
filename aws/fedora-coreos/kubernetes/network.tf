@@ -7,9 +7,8 @@ resource "aws_vpc" "network" {
   count                            = (var.reuse_networking == "true" ? 0 : 1)
   cidr_block                       = var.host_cidr
   assign_generated_ipv6_cidr_block = (var.ipv6_networking == "true" ? true : false)
-
-  enable_dns_support   = true
-  enable_dns_hostnames = true
+  enable_dns_support               = true
+  enable_dns_hostnames             = true
 
   tags = {
     "Name" = var.cluster_name
