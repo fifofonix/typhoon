@@ -44,7 +44,7 @@ resource "aws_security_group_rule" "controller-ssh" {
   protocol    = "tcp"
   from_port   = 22
   to_port     = 22
-  cidr_blocks = ["0.0.0.0/0"]
+  cidr_blocks = var.ssh_cidr_origins
 }
 
 resource "aws_security_group_rule" "controller-etcd" {
@@ -332,7 +332,7 @@ resource "aws_security_group_rule" "worker-ssh" {
   protocol    = "tcp"
   from_port   = 22
   to_port     = 22
-  cidr_blocks = ["0.0.0.0/0"]
+  cidr_blocks = var.ssh_cidr_origins
 }
 
 resource "aws_security_group_rule" "worker-http" {
