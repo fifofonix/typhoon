@@ -120,6 +120,12 @@ variable "node_taints" {
   default     = []
 }
 
+variable "node_tags" {
+  type        = map
+  description = "Map of additional node tags"
+  default     = {}
+}
+
 # unofficial, undocumented, unsupported
 
 variable "arch" {

@@ -17,9 +17,9 @@ resource "aws_route53_record" "etcds" {
 resource "aws_instance" "controllers" {
   count = var.controller_count
 
-  tags = {
-    Name = "${var.cluster_name}-controller-${count.index}"
-  }
+  tags = merge(
+    var.additional_node_tags,
+  { Name = "${var.cluster_name}-controller-${count.index}" })
 
   instance_type = var.controller_type
   ami           = var.arch == "arm64" ? data.aws_ami.fedora-coreos-arm[0].image_id : data.aws_ami.fedora-coreos.image_id

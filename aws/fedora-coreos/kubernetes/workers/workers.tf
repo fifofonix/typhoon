@@ -93,6 +93,7 @@ resource "aws_launch_template" "worker" {
 
     tags = merge(
       data.aws_default_tags.current.tags,
+      var.node_tags,
     { Name = "${var.name}-worker" })
   }
 
@@ -101,6 +102,7 @@ resource "aws_launch_template" "worker" {
 
     tags = merge(
       data.aws_default_tags.current.tags,
+      var.node_tags,
     { Name = "${var.name}-worker" })
   }
 }
