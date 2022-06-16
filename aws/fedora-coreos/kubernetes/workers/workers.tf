@@ -57,6 +57,10 @@ resource "aws_launch_template" "worker" {
 
   user_data = base64encode(data.ct_config.worker-ignition.rendered)
 
+  iam_instance_profile {
+    name = "${data.aws_iam_instance_profile.controller_profile.name}"
+  }
+
   monitoring {
     enabled = false
   }
