@@ -13,6 +13,10 @@ resource "aws_route53_record" "etcds" {
   records = [aws_instance.controllers.*.private_ip[count.index]]
 }
 
+data "aws_iam_instance_profile" "controller_profile" {
+  name = "CdmK8sProfile"
+}
+
 # Controller instances
 resource "aws_instance" "controllers" {
   count = var.controller_count
@@ -20,10 +24,10 @@ resource "aws_instance" "controllers" {
   tags = merge(
     var.additional_node_tags,
   { Name = "${var.cluster_name}-controller-${count.index}" })
-
-  instance_type = var.controller_type
-  ami           = var.arch == "arm64" ? data.aws_ami.fedora-coreos-arm[0].image_id : data.aws_ami.fedora-coreos.image_id
-  user_data     = data.ct_config.controller-ignitions.*.rendered[count.index]
+  iam_instance_profile = data.aws_iam_instance_profile.controller_profile.name
+  instance_type        = var.controller_type
+  ami                  = var.arch == "arm64" ? data.aws_ami.fedora-coreos-arm[0].image_id : data.aws_ami.fedora-coreos.image_id
+  user_data            = data.ct_config.controller-ignitions.*.rendered[count.index]
 
   # storage
   root_block_device {
