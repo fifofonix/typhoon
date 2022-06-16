@@ -15,6 +15,12 @@ variable "dns_zone_id" {
   description = "AWS Route53 DNS Zone ID (e.g. Z3PAABBCFAKEC0)"
 }
 
+variable "instance_profile" {
+  type        = string
+  description = "AWS instance profile (optional), applies to controller and workers."
+  default     = null
+}
+
 # instances
 
 variable "controller_count" {

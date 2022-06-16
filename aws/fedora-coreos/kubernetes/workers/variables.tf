@@ -20,6 +20,12 @@ variable "security_groups" {
   description = "Must be set to `worker_security_groups` output by cluster"
 }
 
+variable "instance_profile" {
+  type        = string
+  description = "AWS instance profile (optional)."
+  default     = null
+}
+
 # instances
 
 variable "worker_count" {
