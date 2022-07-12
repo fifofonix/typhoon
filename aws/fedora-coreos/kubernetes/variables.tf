@@ -15,6 +15,30 @@ variable "dns_zone_id" {
   description = "AWS Route53 DNS Zone ID (e.g. Z3PAABBCFAKEC0)"
 }
 
+variable "worker_nlb_target_http_port" {
+  type        = number
+  default     = 80
+  description = "NLB Worker target group http port."
+}
+
+variable "worker_nlb_target_https_port" {
+  type        = number
+  default     = 443
+  description = "NLB Worker target group https port."
+}
+
+variable "worker_nlb_target_health_port" {
+  type        = number
+  default     = 10254
+  description = "Target group's instance health check port."
+}
+
+variable "worker_nlb_target_health_uri_path" {
+  type        = string
+  default     = "/healthz"
+  description = "Target group's instance health check port."
+}
+
 # instances
 
 variable "controller_count" {
