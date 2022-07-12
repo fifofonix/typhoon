@@ -81,6 +81,8 @@ variable "worker_nlb_target_health_uri_path" {
   type        = string
   default     = "/healthz"
   description = "Target group's instance health check port."
+}
+
 variable "instance_profile" {
   type        = string
   description = "AWS instance profile (optional), applies to controller and workers."
