@@ -8,6 +8,7 @@ module "workers" {
   security_groups              = [aws_security_group.worker.id]
   worker_count                 = var.worker_count
   instance_type                = var.worker_type
+  instance_profile             = var.instance_profile
   os_stream                    = var.os_stream
   arch                         = var.arch
   disk_size                    = var.disk_size

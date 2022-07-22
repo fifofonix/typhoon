@@ -44,9 +44,16 @@ resource "aws_autoscaling_group" "workers" {
 
 }
 
+data "aws_iam_instance_profile" "controller_profile" {
+  count = var.instance_profile == null ? 0: 1
+  name  = var.instance_profile
+}
+
+# Worker template
 resource "aws_launch_template" "worker" {
   image_id          = var.arch == "arm64" ? data.aws_ami.fedora-coreos-arm[0].image_id : data.aws_ami.fedora-coreos.image_id
   instance_type     = var.instance_type
+  iam_instance_profile = var.instance_profile == null ? "" : data.aws_iam_instance_profile.controller_profile[0].name
 
   user_data = base64encode(data.ct_config.worker-ignition.rendered)
 

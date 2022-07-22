@@ -13,6 +13,11 @@ resource "aws_route53_record" "etcds" {
   records = [aws_instance.controllers.*.private_ip[count.index]]
 }
 
+data "aws_iam_instance_profile" "controller_profile" {
+  count = var.instance_profile == null ? 0 : 1
+  name  = var.instance_profile
+}
+
 # Controller instances
 resource "aws_instance" "controllers" {
   count = var.controller_count
@@ -24,6 +29,8 @@ resource "aws_instance" "controllers" {
   instance_type = var.controller_type
   ami           = var.arch == "arm64" ? data.aws_ami.fedora-coreos-arm[0].image_id : data.aws_ami.fedora-coreos.image_id
   user_data     = data.ct_config.controller-ignitions.*.rendered[count.index]
+
+  iam_instance_profile = var.instance_profile == null ? "" : data.aws_iam_instance_profile.controller_profile[0].name
 
   # storage
   root_block_device {

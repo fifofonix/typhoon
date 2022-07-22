@@ -57,6 +57,7 @@ variable "ssh_cidr_origins" {
   type        = list(string)
   default     = ["0.0.0.0/0"]
   description = "Permitted Cidr block origins for mgmt access to hosts."
+
 variable "worker_nlb_target_http_port" {
   type        = number
   default     = 80
@@ -79,6 +80,10 @@ variable "worker_nlb_target_health_uri_path" {
   type        = string
   default     = "/healthz"
   description = "Target group's instance health check port."
+variable "instance_profile" {
+  type        = string
+  description = "AWS instance profile (optional), applies to controller and workers."
+  default     = null
 }
 
 # instances
