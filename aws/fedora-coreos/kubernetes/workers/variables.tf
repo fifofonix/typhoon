@@ -75,6 +75,30 @@ variable "target_groups" {
   default     = []
 }
 
+variable "target_group_http_port" {
+  type    = number
+  default     = 80
+  description = "Target group http port."
+}
+
+variable "target_group_https_port" {
+  type    = number
+  default     = 443
+  description = "Target group https port."
+}
+
+variable "target_group_health_port" {
+  type    = number
+  default     = 10254
+  description = "Target group's instance health check port."
+}
+
+variable "target_group_health_uri_path" {
+  type    = string
+  default     = "/healthz"
+  description = "Target group's instance health check port."
+}
+
 variable "snippets" {
   type        = list(string)
   description = "Butane snippets"

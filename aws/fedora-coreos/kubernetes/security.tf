@@ -340,8 +340,8 @@ resource "aws_security_group_rule" "worker-http" {
 
   type        = "ingress"
   protocol    = "tcp"
-  from_port   = 80
-  to_port     = 80
+  from_port   = var.worker_nlb_target_http_port
+  to_port     = var.worker_nlb_target_http_port
   cidr_blocks = ["0.0.0.0/0"]
 }
 
@@ -350,8 +350,8 @@ resource "aws_security_group_rule" "worker-https" {
 
   type        = "ingress"
   protocol    = "tcp"
-  from_port   = 443
-  to_port     = 443
+  from_port   = var.worker_nlb_target_https_port
+  to_port     = var.worker_nlb_target_https_port
   cidr_blocks = ["0.0.0.0/0"]
 }
 
