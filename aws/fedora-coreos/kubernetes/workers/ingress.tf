@@ -30,7 +30,7 @@ resource "aws_lb_target_group" "workers-https" {
   target_type = "instance"
 
   protocol = "TCP"
-  port     = var.target_group_http_port
+  port     = var.target_group_https_port
 
   # HTTP health check for ingress
   health_check {
