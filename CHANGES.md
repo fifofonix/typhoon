@@ -4,6 +4,84 @@ Notable changes between versions.
 
 ## Latest
 
+* Kubernetes [v1.24.3](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.24.md#v1243)
+* Update Cilium from v1.11.6 to [v1.11.7](https://github.com/cilium/cilium/releases/tag/v1.11.7)
+
+### Addons
+
+* Update ingress-nginx from v1.2.1 to [v1.3.0](https://github.com/kubernetes/ingress-nginx/releases/tag/controller-v1.3.0)
+* Update Prometheus from v2.36.1 to [v2.37.0](https://github.com/prometheus/prometheus/releases/tag/v2.37.0)
+* Update Grafana from v8.5.6 to [v9.0.3](https://github.com/grafana/grafana/releases/tag/v9.0.3)
+
+### Notes
+
+* Poseidon repos will soon change their default branch from `master` to `main`
+
+## v1.24.2
+
+* Kubernetes [v1.24.2](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.24.md#v1242)
+* Update Cilium from v1.11.5 to [v1.11.6](https://github.com/cilium/cilium/releases/tag/v1.11.6)
+* Update Calico from v3.22.2 to [v3.23.1](https://github.com/projectcalico/calico/releases/tag/v3.23.1)
+
+### Addons
+
+* Update Prometheus from v2.36.0 to [v2.36.1](https://github.com/prometheus/prometheus/releases/tag/v2.36.1)
+* Update Grafana from v8.5.3 to [v8.5.6](https://github.com/grafana/grafana/releases/tag/v8.5.6)
+* Update kube-state-metrics from v2.4.2 to [v2.5.0](https://github.com/kubernetes/kube-state-metrics/releases/tag/v2.5.0)
+
+## Known Issues
+
+* Skip AWS Terraform provider v4.17.0 to v4.19.0, which had a regression affecting workers joining ([#1173](https://github.com/poseidon/typhoon/issues/1173))
+
+## v1.24.1
+
+* Kubernetes [v1.24.1](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.24.md#v1241)
+* Update Cilium from v1.11.4 to [v1.11.5](https://github.com/cilium/cilium/releases/tag/v1.11.5)
+
+### Addons
+
+* Update Prometheus from v2.35.0 to [v2.36.0](https://github.com/prometheus/prometheus/releases/tag/v2.36.0)
+* Update Grafana from v8.5.1 to [v8.5.3](https://github.com/grafana/grafana/releases/tag/v8.5.3)
+* Update nginx-ingress from v1.2.0 to [v1.2.1](https://github.com/kubernetes/ingress-nginx/releases/tag/controller-v1.2.1)
+
+## v1.24.0
+
+* Kubernetes [v1.24.0](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.24.md#v1240)
+* Update etcd from v3.5.2 to [v3.5.4](https://github.com/etcd-io/etcd/releases/tag/v3.5.4)
+* Add Kubelet mounts to enable relabeling workload volumes ([#1152](https://github.com/poseidon/typhoon/pull/1152))
+  * StorageClass no longer require explicit SELinux mount contexts
+
+### Addons
+
+* Update nginx-ingress from v1.1.3 to [v1.2.0](https://github.com/kubernetes/ingress-nginx/releases/tag/controller-v1.2.0)
+* Update Prometheus from v2.34.0 to [v2.35.0](https://github.com/prometheus/prometheus/releases/tag/v2.35.0)
+* Update Grafana from v8.4.5 to [v8.5.1](https://github.com/grafana/grafana/releases/tag/v8.5.1)
+
+## v1.23.6
+
+* Kubernetes [v1.23.6](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.23.md#v1236)
+* Update Cilium from v1.11.2 to [v1.11.4](https://github.com/cilium/cilium/releases/tag/v1.11.4)
+* Rename Cilium DaemonSet from `cilium-agent` to `cilium` to match Cilium CLI tools ([#303](https://github.com/poseidon/terraform-render-bootstrap/pull/303))
+* Update Calico from v3.22.1 to [v3.22.2](https://github.com/projectcalico/calico/releases/tag/v3.22.2)
+* Mount /etc/machine-id from host into Kubelet ([#1143](https://github.com/poseidon/typhoon/pull/1143))
+* Remove deprecated use of `key_algorithm` in `hashicorp/tls` resources
+
+### Azure
+
+* Allow upgrading Azure Terraform provider to v3.x ([#1144](https://github.com/poseidon/typhoon/pull/1144))
+* Rename `worker_address_prefix` output to `worker_address_prefixes`
+
+### Google Cloud
+
+* Fix issue on Flatcar Linux with controller nodes not ignoring os image changes ([#1149](https://github.com/poseidon/typhoon/pull/1149))
+  * Nodes will auto-update, Terraform should not attempt to delete/recreate them
+
+### Addons
+
+* Update nginx-ingress from v1.1.2 to [v1.1.3](https://github.com/kubernetes/ingress-nginx/releases/tag/controller-v1.1.3)
+* Update Prometheus from v2.33.5 to [v2.34.0](https://github.com/prometheus/prometheus/releases/tag/v2.34.0)
+* Update Grafana from v8.4.4 to [v8.4.5](https://github.com/grafana/grafana/releases/tag/v8.4.5)
+
 ## v1.23.5
 
 * Kubernetes [v1.23.5](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.23.md#v1235)
