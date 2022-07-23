@@ -53,12 +53,11 @@ data "aws_iam_instance_profile" "controller_profile" {
 resource "aws_launch_template" "worker" {
   image_id          = var.arch == "arm64" ? data.aws_ami.fedora-coreos-arm[0].image_id : data.aws_ami.fedora-coreos.image_id
   instance_type     = var.instance_type
-  iam_instance_profile = var.instance_profile == null ? "" : data.aws_iam_instance_profile.controller_profile[0].name
 
   user_data = base64encode(data.ct_config.worker-ignition.rendered)
 
   iam_instance_profile {
-    name = "${data.aws_iam_instance_profile.controller_profile.name}"
+    name =  var.instance_profile == null ? "" : data.aws_iam_instance_profile.controller_profile[0].name
   }
 
   monitoring {
