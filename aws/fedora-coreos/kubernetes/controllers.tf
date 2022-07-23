@@ -25,9 +25,10 @@ resource "aws_instance" "controllers" {
   tags = merge(
     var.additional_node_tags,
   { Name = "${var.cluster_name}-controller-${count.index}" })
-  instance_type = var.controller_type
-  ami           = var.arch == "arm64" ? data.aws_ami.fedora-coreos-arm[0].image_id : data.aws_ami.fedora-coreos.image_id
-  user_data     = data.ct_config.controller-ignitions.*.rendered[count.index]
+  iam_instance_profile = data.aws_iam_instance_profile.controller_profile.name
+  instance_type        = var.controller_type
+  ami                  = var.arch == "arm64" ? data.aws_ami.fedora-coreos-arm[0].image_id : data.aws_ami.fedora-coreos.image_id
+  user_data            = data.ct_config.controller-ignitions.*.rendered[count.index]
 
   iam_instance_profile = var.instance_profile == null ? "" : data.aws_iam_instance_profile.controller_profile[0].name
 
