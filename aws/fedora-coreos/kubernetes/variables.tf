@@ -83,6 +83,12 @@ variable "worker_nlb_target_health_uri_path" {
   description = "Target group's instance health check port."
 }
 
+variable "worker_additional_cidr_blocks" {
+  type        = list(string)
+  default     = ""
+  description = "Additional worker CIDR blocks (e.g. vSphere-based nodes)."
+}
+
 variable "instance_profile" {
   type        = string
   description = "AWS instance profile (optional), applies to controller and workers."

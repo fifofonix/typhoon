@@ -25,6 +25,18 @@ resource "aws_security_group_rule" "controller-icmp" {
   source_security_group_id = aws_security_group.worker.id
 }
 
+resource "aws_security_group_rule" "controller-icmp-addtl" {
+  count = var.networking == "cilium" && var.worker_additional_cidr_blocks != "" ? 1 : 0
+
+  security_group_id = aws_security_group.controller.id
+
+  type                     = "ingress"
+  protocol                 = "icmp"
+  from_port                = 8
+  to_port                  = 0
+  cidr_blocks              = var.worker_additional_cidr_blocks
+}
+
 resource "aws_security_group_rule" "controller-icmp-self" {
   count = var.networking == "cilium" ? 1 : 0
 
@@ -68,6 +80,18 @@ resource "aws_security_group_rule" "controller-etcd-metrics" {
   source_security_group_id = aws_security_group.worker.id
 }
 
+resource "aws_security_group_rule" "controller-etcd-metrics-addtl" {
+  count = var.worker_additional_cidr_blocks != "" ? 1 : 0
+
+  security_group_id = aws_security_group.controller.id
+
+  type                     = "ingress"
+  protocol                 = "tcp"
+  from_port                = 2381
+  to_port                  = 2381
+  cidr_blocks              = var.worker_additional_cidr_blocks
+}
+
 resource "aws_security_group_rule" "controller-cilium-health" {
   count = var.networking == "cilium" ? 1 : 0
 
@@ -78,6 +102,19 @@ resource "aws_security_group_rule" "controller-cilium-health" {
   from_port                = 4240
   to_port                  = 4240
   source_security_group_id = aws_security_group.worker.id
+}
+
+
+resource "aws_security_group_rule" "controller-cilium-health-addtl" {
+  count = var.networking == "cilium" && var.worker_additional_cidr_blocks != "" ? 1 : 0
+
+  security_group_id = aws_security_group.controller.id
+
+  type                     = "ingress"
+  protocol                 = "tcp"
+  from_port                = 4240
+  to_port                  = 4240
+  cidr_blocks              = var.worker_additional_cidr_blocks
 }
 
 resource "aws_security_group_rule" "controller-cilium-health-self" {
@@ -103,6 +140,18 @@ resource "aws_security_group_rule" "controller-vxlan" {
   from_port                = 4789
   to_port                  = 4789
   source_security_group_id = aws_security_group.worker.id
+}
+
+resource "aws_security_group_rule" "controller-vxlan-addtl" {
+  count = var.networking == "flannel" && var.worker_additional_cidr_blocks != "" ? 1 : 0
+
+  security_group_id = aws_security_group.controller.id
+
+  type                     = "ingress"
+  protocol                 = "udp"
+  from_port                = 4789
+  to_port                  = 4789
+  cidr_blocks              = var.worker_additional_cidr_blocks
 }
 
 resource "aws_security_group_rule" "controller-vxlan-self" {
@@ -140,6 +189,18 @@ resource "aws_security_group_rule" "controller-linux-vxlan" {
   source_security_group_id = aws_security_group.worker.id
 }
 
+resource "aws_security_group_rule" "controller-linux-vxlan-addtl" {
+  count = var.networking == "cilium" && var.worker_additional_cidr_blocks != "" ? 1 : 0
+
+  security_group_id = aws_security_group.controller.id
+
+  type                     = "ingress"
+  protocol                 = "udp"
+  from_port                = 8472
+  to_port                  = 8472
+  cidr_blocks              = var.worker_additional_cidr_blocks
+}
+
 resource "aws_security_group_rule" "controller-linux-vxlan-self" {
   count = var.networking == "cilium" ? 1 : 0
 
@@ -163,6 +224,18 @@ resource "aws_security_group_rule" "controller-node-exporter" {
   source_security_group_id = aws_security_group.worker.id
 }
 
+resource "aws_security_group_rule" "controller-node-exporter-addtl" {
+  count = var.worker_additional_cidr_blocks != "" ? 1 : 0
+
+  security_group_id = aws_security_group.controller.id
+
+  type                     = "ingress"
+  protocol                 = "tcp"
+  from_port                = 9100
+  to_port                  = 9100
+  cidr_blocks              = var.worker_additional_cidr_blocks
+}
+
 # Allow Prometheus to scrape kube-proxy
 resource "aws_security_group_rule" "kube-proxy-metrics" {
   security_group_id = aws_security_group.controller.id
@@ -174,6 +247,19 @@ resource "aws_security_group_rule" "kube-proxy-metrics" {
   source_security_group_id = aws_security_group.worker.id
 }
 
+# Allow Prometheus to scrape kube-proxy
+resource "aws_security_group_rule" "kube-proxy-metrics-addtl" {
+  count = var.worker_additional_cidr_blocks != "" ? 1 : 0
+
+  security_group_id = aws_security_group.controller.id
+
+  type                     = "ingress"
+  protocol                 = "tcp"
+  from_port                = 10249
+  to_port                  = 10249
+  cidr_blocks              = var.worker_additional_cidr_blocks
+}
+
 # Allow apiserver to access kubelets for exec, log, port-forward
 resource "aws_security_group_rule" "controller-kubelet" {
   security_group_id = aws_security_group.controller.id
@@ -183,6 +269,19 @@ resource "aws_security_group_rule" "controller-kubelet" {
   from_port                = 10250
   to_port                  = 10250
   source_security_group_id = aws_security_group.worker.id
+}
+
+# Allow apiserver to access kubelets for exec, log, port-forward
+resource "aws_security_group_rule" "controller-kubelet-addtl" {
+  count = var.worker_additional_cidr_blocks != "" ? 1 : 0
+
+  security_group_id = aws_security_group.controller.id
+
+  type                     = "ingress"
+  protocol                 = "tcp"
+  from_port                = 10250
+  to_port                  = 10250
+  cidr_blocks              = var.worker_additional_cidr_blocks
 }
 
 resource "aws_security_group_rule" "controller-kubelet-self" {
@@ -206,6 +305,18 @@ resource "aws_security_group_rule" "controller-scheduler-metrics" {
   source_security_group_id = aws_security_group.worker.id
 }
 
+resource "aws_security_group_rule" "controller-scheduler-metrics-addtl" {
+  count = var.worker_additional_cidr_blocks != "" ? 1 : 0
+
+  security_group_id = aws_security_group.controller.id
+
+  type                     = "ingress"
+  protocol                 = "tcp"
+  from_port                = 10259
+  to_port                  = 10259
+  cidr_blocks              = var.worker_additional_cidr_blocks
+}
+
 # Allow Prometheus to scrape kube-controller-manager
 resource "aws_security_group_rule" "controller-manager-metrics" {
   security_group_id = aws_security_group.controller.id
@@ -217,6 +328,19 @@ resource "aws_security_group_rule" "controller-manager-metrics" {
   source_security_group_id = aws_security_group.worker.id
 }
 
+# Allow Prometheus to scrape kube-controller-manager
+resource "aws_security_group_rule" "controller-manager-metrics-addtl" {
+  count = var.worker_additional_cidr_blocks != "" ? 1 : 0
+
+  security_group_id = aws_security_group.controller.id
+
+  type                     = "ingress"
+  protocol                 = "tcp"
+  from_port                = 10257
+  to_port                  = 10257
+  cidr_blocks              = var.worker_additional_cidr_blocks
+}
+
 resource "aws_security_group_rule" "controller-bgp" {
   security_group_id = aws_security_group.controller.id
 
@@ -225,6 +349,18 @@ resource "aws_security_group_rule" "controller-bgp" {
   from_port                = 179
   to_port                  = 179
   source_security_group_id = aws_security_group.worker.id
+}
+
+resource "aws_security_group_rule" "controller-bgp-addtl" {
+  count = var.worker_additional_cidr_blocks != "" ? 1 : 0
+
+  security_group_id = aws_security_group.controller.id
+
+  type                     = "ingress"
+  protocol                 = "tcp"
+  from_port                = 179
+  to_port                  = 179
+  cidr_blocks              = var.worker_additional_cidr_blocks
 }
 
 resource "aws_security_group_rule" "controller-bgp-self" {
@@ -247,6 +383,18 @@ resource "aws_security_group_rule" "controller-ipip" {
   source_security_group_id = aws_security_group.worker.id
 }
 
+resource "aws_security_group_rule" "controller-ipip-addtl" {
+  count = var.worker_additional_cidr_blocks != "" ? 1 : 0
+
+  security_group_id = aws_security_group.controller.id
+
+  type                     = "ingress"
+  protocol                 = 4
+  from_port                = 0
+  to_port                  = 0
+  cidr_blocks              = var.worker_additional_cidr_blocks
+}
+
 resource "aws_security_group_rule" "controller-ipip-self" {
   security_group_id = aws_security_group.controller.id
 
@@ -265,6 +413,18 @@ resource "aws_security_group_rule" "controller-ipip-legacy" {
   from_port                = 0
   to_port                  = 0
   source_security_group_id = aws_security_group.worker.id
+}
+
+resource "aws_security_group_rule" "controller-ipip-legacy-addtl" {
+  count = var.worker_additional_cidr_blocks != "" ? 1 : 0
+
+  security_group_id = aws_security_group.controller.id
+
+  type                     = "ingress"
+  protocol                 = 94
+  from_port                = 0
+  to_port                  = 0
+  cidr_blocks              = var.worker_additional_cidr_blocks
 }
 
 resource "aws_security_group_rule" "controller-ipip-legacy-self" {
@@ -325,6 +485,18 @@ resource "aws_security_group_rule" "worker-icmp-self" {
   self      = true
 }
 
+resource "aws_security_group_rule" "worker-icmp-self-addtl" {
+  count = var.networking == "cilium" && var.worker_additional_cidr_blocks != "" ? 1 : 0
+
+  security_group_id = aws_security_group.worker.id
+
+  type      = "ingress"
+  protocol  = "icmp"
+  from_port = 8
+  to_port   = 0
+  cidr_blocks = var.worker_additional_cidr_blocks
+}
+
 resource "aws_security_group_rule" "worker-ssh" {
   security_group_id = aws_security_group.worker.id
 
@@ -379,6 +551,18 @@ resource "aws_security_group_rule" "worker-cilium-health-self" {
   self      = true
 }
 
+resource "aws_security_group_rule" "worker-cilium-health-self-addtl" {
+  count = var.networking == "cilium" && var.worker_additional_cidr_blocks != "" ? 1 : 0
+
+  security_group_id = aws_security_group.worker.id
+
+  type      = "ingress"
+  protocol  = "tcp"
+  from_port = 4240
+  to_port   = 4240
+  cidr_blocks = var.worker_additional_cidr_blocks
+}
+
 # IANA VXLAN default
 resource "aws_security_group_rule" "worker-vxlan" {
   count = var.networking == "flannel" ? 1 : 0
@@ -402,6 +586,18 @@ resource "aws_security_group_rule" "worker-vxlan-self" {
   from_port = 4789
   to_port   = 4789
   self      = true
+}
+
+resource "aws_security_group_rule" "worker-vxlan-self-addtl" {
+  count = var.networking == "flannel" && var.worker_additional_cidr_blocks != "" ? 1 : 0
+
+  security_group_id = aws_security_group.worker.id
+
+  type      = "ingress"
+  protocol  = "udp"
+  from_port = 4789
+  to_port   = 4789
+  cidr_blocks = var.worker_additional_cidr_blocks
 }
 
 # Linux VXLAN default
@@ -429,6 +625,18 @@ resource "aws_security_group_rule" "worker-linux-vxlan-self" {
   self      = true
 }
 
+resource "aws_security_group_rule" "worker-linux-vxlan-self-addtl" {
+  count = var.networking == "cilium" && var.worker_additional_cidr_blocks != "" ? 1 : 0
+
+  security_group_id = aws_security_group.worker.id
+
+  type      = "ingress"
+  protocol  = "udp"
+  from_port = 8472
+  to_port   = 8472
+  cidr_blocks = var.worker_additional_cidr_blocks
+}
+
 # Allow Prometheus to scrape node-exporter daemonset
 resource "aws_security_group_rule" "worker-node-exporter" {
   security_group_id = aws_security_group.worker.id
@@ -440,6 +648,18 @@ resource "aws_security_group_rule" "worker-node-exporter" {
   self      = true
 }
 
+resource "aws_security_group_rule" "worker-node-exporter-addtl" {
+  count = var.worker_additional_cidr_blocks != "" ? 1 : 0
+
+  security_group_id = aws_security_group.worker.id
+
+  type      = "ingress"
+  protocol  = "tcp"
+  from_port = 9100
+  to_port   = 9100
+  cidr_blocks = var.worker_additional_cidr_blocks
+}
+
 # Allow Prometheus to scrape kube-proxy
 resource "aws_security_group_rule" "worker-kube-proxy" {
   security_group_id = aws_security_group.worker.id
@@ -449,6 +669,18 @@ resource "aws_security_group_rule" "worker-kube-proxy" {
   from_port = 10249
   to_port   = 10249
   self      = true
+}
+
+resource "aws_security_group_rule" "worker-kube-proxy-addtl" {
+  count = var.worker_additional_cidr_blocks != "" ? 1 : 0
+
+  security_group_id = aws_security_group.worker.id
+
+  type      = "ingress"
+  protocol  = "tcp"
+  from_port = 10249
+  to_port   = 10249
+  cidr_blocks = var.worker_additional_cidr_blocks
 }
 
 # Allow apiserver to access kubelets for exec, log, port-forward
@@ -471,6 +703,18 @@ resource "aws_security_group_rule" "worker-kubelet-self" {
   from_port = 10250
   to_port   = 10250
   self      = true
+}
+
+resource "aws_security_group_rule" "worker-kubelet-self-addtl" {
+  count = var.worker_additional_cidr_blocks != "" ? 1 : 0
+
+  security_group_id = aws_security_group.worker.id
+
+  type      = "ingress"
+  protocol  = "tcp"
+  from_port = 10250
+  to_port   = 10250
+  cidr_blocks = var.worker_additional_cidr_blocks
 }
 
 resource "aws_security_group_rule" "ingress-health" {
@@ -503,6 +747,18 @@ resource "aws_security_group_rule" "worker-bgp-self" {
   self      = true
 }
 
+resource "aws_security_group_rule" "worker-bgp-self-addtl" {
+  count = var.worker_additional_cidr_blocks != "" ? 1 : 0
+
+  security_group_id = aws_security_group.worker.id
+
+  type      = "ingress"
+  protocol  = "tcp"
+  from_port = 179
+  to_port   = 179
+  cidr_blocks = var.worker_additional_cidr_blocks
+}
+
 resource "aws_security_group_rule" "worker-ipip" {
   security_group_id = aws_security_group.worker.id
 
@@ -523,6 +779,18 @@ resource "aws_security_group_rule" "worker-ipip-self" {
   self      = true
 }
 
+resource "aws_security_group_rule" "worker-ipip-self-addtl" {
+  count = var.worker_additional_cidr_blocks != "" ? 1 : 0
+
+  security_group_id = aws_security_group.worker.id
+
+  type      = "ingress"
+  protocol  = 4
+  from_port = 0
+  to_port   = 0
+  cidr_blocks = var.worker_additional_cidr_blocks
+}
+
 resource "aws_security_group_rule" "worker-ipip-legacy" {
   security_group_id = aws_security_group.worker.id
 
@@ -541,6 +809,18 @@ resource "aws_security_group_rule" "worker-ipip-legacy-self" {
   from_port = 0
   to_port   = 0
   self      = true
+}
+
+resource "aws_security_group_rule" "worker-ipip-legacy-self-addtl" {
+  count = var.worker_additional_cidr_blocks != "" ? 1 : 0
+
+  security_group_id = aws_security_group.worker.id
+
+  type      = "ingress"
+  protocol  = 94
+  from_port = 0
+  to_port   = 0
+  cidr_blocks = var.worker_additional_cidr_blocks
 }
 
 resource "aws_security_group_rule" "worker-egress" {
