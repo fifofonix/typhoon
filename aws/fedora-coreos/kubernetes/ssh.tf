@@ -5,6 +5,9 @@ locals {
     for key, value in module.bootstrap.assets_dist :
     format("##### %s\n%s", key, value)
   ]
+
+  environment = aws_instance.controllers[0].tags.Environment
+
 }
 
 # Secure copy assets to controllers.
@@ -19,6 +22,8 @@ resource "null_resource" "copy-controller-secrets" {
     type    = "ssh"
     host    = (var.privacy_status == "public" ? aws_instance.controllers.*.public_ip[count.index] : aws_instance.controllers.*.private_ip[count.index])
     user    = "core"
+    agent_identity = file("~/.ssh/id_ecdsa_${local.environment}")
+    certificate = file("~/.ssh/id_ecdsa_${local.environment}-cert.pub")
     timeout = "15m"
   }
 
@@ -46,6 +51,8 @@ resource "null_resource" "bootstrap" {
     type    = "ssh"
     host    = (var.privacy_status == "public" ? aws_instance.controllers[0].public_ip : aws_instance.controllers[0].private_ip)
     user    = "core"
+    agent_identity = file("~/.ssh/id_ecdsa_${local.environment}")
+    certificate = file("~/.ssh/id_ecdsa_${local.environment}-cert.pub")
     timeout = "15m"
   }
 
