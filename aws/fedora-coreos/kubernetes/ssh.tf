@@ -6,7 +6,7 @@ locals {
     format("##### %s\n%s", key, value)
   ]
 
-  environment = aws_instance.controllers[0].tags.Environment
+  environment = lookup(aws_instance.controllers[0].tags, "Environment")
 
 }
 
