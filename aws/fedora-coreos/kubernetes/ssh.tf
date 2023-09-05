@@ -6,8 +6,7 @@ locals {
     format("##### %s\n%s", key, value)
   ]
 
-  # environment = lookup(aws_instance.controllers[0].tags, "environment")
-  environment = "dev" # TODO: remove this line
+  environment = var.additional_node_tags.environment
 
 }
 

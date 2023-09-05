@@ -60,7 +60,3 @@ output "assets_dist" {
   value     = module.bootstrap.assets_dist
   sensitive = true
 }
-
-output "controller_tags" {
-  value     = aws_instance.controllers[0].tags
-}
