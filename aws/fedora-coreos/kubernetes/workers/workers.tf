@@ -62,7 +62,7 @@ resource "aws_launch_template" "worker" {
   image_id          = var.arch == "arm64" ? data.aws_ami.fedora-coreos-arm[0].image_id : data.aws_ami.fedora-coreos.image_id
   instance_type     = var.instance_type
 
-  user_data = sensitive(base64gzip(data.ct_config.worker-ignition.rendered))
+  user_data = sensitive(base64encode(local.worker_ignition_rendered_b64zipped))
 
   iam_instance_profile {
     name =  var.instance_profile == null ? "" : data.aws_iam_instance_profile.controller_profile[0].name
@@ -132,6 +132,22 @@ resource "aws_launch_template" "worker" {
 }
 
 data "aws_default_tags" "current" {}
+
+locals {
+  worker_ignition_rendered_b64zipped = jsonencode(
+    {
+      "ignition": {
+        "version": "3.4.0",
+        "config": {
+          "replace": {
+              "compression": "gzip"
+              "source": "data:;base64,${base64gzip(data.ct_config.worker-ignition.rendered)}"
+            }
+        }
+      }
+    }
+  )
+}
 
 # Worker Ignition config
 data "ct_config" "worker-ignition" {
