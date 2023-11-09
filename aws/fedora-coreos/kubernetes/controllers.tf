@@ -25,11 +25,8 @@ resource "aws_instance" "controllers" {
   tags = merge(
     var.additional_node_tags,
   { Name = "${var.cluster_name}-controller-${count.index}" })
-
-  instance_type = var.controller_type
-  ami           = var.controller_arch == "arm64" ? data.aws_ami.fedora-coreos-arm[0].image_id : data.aws_ami.fedora-coreos.image_id
-
-  #? user_data            = sensitive(base64gzip(data.ct_config.controller-ignitions.*.rendered[count.index]))
+  instance_type        = var.controller_type
+  ami                  = var.controller_arch == "arm64" ? data.aws_ami.fedora-coreos-arm[0].image_id : data.aws_ami.fedora-coreos.image_id
   iam_instance_profile = var.instance_profile == null ? "" : data.aws_iam_instance_profile.controller_profile[0].name
 
   # storage
@@ -44,14 +41,25 @@ resource "aws_instance" "controllers" {
   }
 
   # network
-
   associate_public_ip_address = (var.privacy_status == "public" ? true : false)
   subnet_id                   = element(data.aws_subnets.subnets.ids, count.index)
-
   vpc_security_group_ids      = [aws_security_group.controller.id]
 
   # boot
-  user_data = data.ct_config.controllers.*.rendered[count.index]
+  user_data            = sensitive(base64encode(
+                              jsonencode(
+                                {
+                                  "ignition": {
+                                    "version": "3.4.0",
+                                    "config": {
+                                      "replace": {
+                                          "compression": "gzip",
+                                          "source": "data:;base64,${base64gzip(data.ct_config.controller-ignitions.*.rendered[count.index])}"
+                                        }
+                                    }
+                                  }
+                                }
+                              )))
 
   # cost
   credit_specification {

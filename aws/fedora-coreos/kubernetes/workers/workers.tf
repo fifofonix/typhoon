@@ -66,8 +66,6 @@ resource "aws_launch_template" "worker" {
   image_id      = local.ami_id
   instance_type = var.instance_type
 
-  user_data = sensitive(base64gzip(data.ct_config.worker-ignition.rendered))
-
   iam_instance_profile {
     name =  var.instance_profile == null ? "" : data.aws_iam_instance_profile.controller_profile[0].name
   }
@@ -96,7 +94,7 @@ resource "aws_launch_template" "worker" {
   }
 
   # boot
-  user_data = sensitive(base64encode(data.ct_config.worker.rendered))
+  user_data = sensitive(base64encode(local.worker_ignition_rendered_b64zipped))
 
   # metadata
   metadata_options {
@@ -148,6 +146,22 @@ resource "aws_launch_template" "worker" {
 }
 
 data "aws_default_tags" "current" {}
+
+locals {
+  worker_ignition_rendered_b64zipped = jsonencode(
+    {
+      "ignition": {
+        "version": "3.4.0",
+        "config": {
+          "replace": {
+              "compression": "gzip"
+              "source": "data:;base64,${base64gzip(data.ct_config.worker-ignition.rendered)}"
+            }
+        }
+      }
+    }
+  )
+}
 
 # Worker Ignition config
 data "ct_config" "worker-ignition" {
