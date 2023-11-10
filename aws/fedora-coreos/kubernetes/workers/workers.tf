@@ -165,20 +165,13 @@ locals {
 
 # Worker Ignition config
 data "ct_config" "worker-ignition" {
-  content  = data.template_file.worker-config.rendered
-  strict   = true
-  snippets = var.snippets
-}
-
-# Worker Fedora CoreOS config
-data "template_file" "worker-config" {
-  template = file("${path.module}/butane/worker.yaml")
-
-  vars = {
+  content  = templatefile("${path.module}/butane/worker.yaml", {
     kubeconfig             = indent(10, var.kubeconfig)
     ssh_authorized_key     = var.ssh_authorized_key
     cluster_dns_service_ip = cidrhost(var.service_cidr, 10)
     node_labels            = join(",", var.node_labels)
     node_taints            = join(",", var.node_taints)
-  }
+  })
+  strict   = true
+  snippets = var.snippets
 }
