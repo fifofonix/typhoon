@@ -12,8 +12,8 @@ module "workers" {
   os_stream                    = var.os_stream
   worker_count                 = var.worker_count
   instance_type                = var.worker_type
-  arch                         = var.arch
-  disk_size                    = var.disk_size
+  arch                         = var.worker_arch
+  disk_size                    = var.worker_disk_size
   disk_iops                    = var.worker_disk_iops
   cpu_credits                  = var.worker_cpu_credits
   spot_price                   = var.worker_price
@@ -28,7 +28,7 @@ module "workers" {
   kubeconfig            = module.bootstrap.kubeconfig-kubelet
   ssh_authorized_key    = var.ssh_authorized_key
   service_cidr          = var.service_cidr
-  snippets              = var.worker_snippets
+  snippets               = var.worker_snippets
   node_labels           = var.worker_node_labels
   node_tags             = var.additional_node_tags
 }

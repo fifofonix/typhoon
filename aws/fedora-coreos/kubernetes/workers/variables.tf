@@ -52,6 +52,12 @@ variable "instance_type" {
   default     = "t3.small"
 }
 
+variable "instance_type_list" {
+  type        = list(string)
+  description = "EC2 instance type list"
+  default     = null
+}
+
 variable "os_stream" {
   type        = string
   description = "Fedora CoreOS image stream for instances (e.g. stable, testing, next)"
