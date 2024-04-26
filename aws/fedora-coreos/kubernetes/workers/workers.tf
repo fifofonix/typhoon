@@ -12,10 +12,29 @@ resource "aws_autoscaling_group" "workers" {
   # network
   vpc_zone_identifier = var.subnet_ids
 
-  # template
-  launch_template {
-    id      = aws_launch_template.worker.id
-    version = aws_launch_template.worker.latest_version
+  # launch template
+  # two possible declaration constructs depending on multi-instance or not
+
+  # launch template declaration for single instance type
+  dynamic "launch_template" {
+    for_each = var.instance_type_list != null ? toset([]) : toset([1])
+    content {
+      id      = aws_launch_template.worker.id
+      version = aws_launch_template.worker.latest_version
+    }
+  }
+
+  # launch template declaration for multi-instance type
+  dynamic "mixed_instances_policy" {
+    for_each = var.instance_type_list == null ? toset([]) : toset([1])
+    content {
+      launch_template {
+        launch_template_specification {
+          launch_template_id = aws_launch_template.worker.id
+          version = aws_launch_template.worker.latest_version
+        }
+      }
+    }
   }
 
   # target groups to which instances should be added
@@ -59,8 +78,22 @@ data "aws_iam_instance_profile" "controller_profile" {
 
 # Worker template
 resource "aws_launch_template" "worker" {
-  image_id          = var.arch == "arm64" ? data.aws_ami.fedora-coreos-arm[0].image_id : data.aws_ami.fedora-coreos.image_id
-  instance_type     = var.instance_type
+  image_id           = var.arch == "arm64" ? data.aws_ami.fedora-coreos-arm[0].image_id : data.aws_ami.fedora-coreos.image_id
+  instance_type      = var.instance_type_list == null ? var.instance_type : null
+
+  dynamic "instance_requirements" {
+    for_each = var.instance_type_list == null ? toset([]) : toset([1])
+    content {
+      vcpu_count {
+        min = 2
+      }
+      memory_mib {
+        min = 4096
+      }
+
+      allowed_instance_types = var.instance_type_list
+    }
+  }
 
   user_data = sensitive(base64encode(local.worker_ignition_rendered_b64zipped))
 
