@@ -152,7 +152,9 @@ resource "aws_launch_template" "worker" {
   lifecycle {
     // Override the default destroy and replace update behavior
     create_before_destroy = true
-    ignore_changes        = [image_id]
+    # Do not ignore image_id - when we do a daily `terraform apply` we want the
+    # image_id to update as FCOS AMIs are updated.
+    # ignore_changes        = [image_id]
   }
 
   tag_specifications {
