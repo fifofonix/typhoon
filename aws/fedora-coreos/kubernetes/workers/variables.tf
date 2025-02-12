@@ -69,6 +69,12 @@ variable "os_stream" {
   }
 }
 
+variable "os_pinned_ami" {
+  type        = string
+  description = "Fedora CoreOS image AMI (region specific) to pin to (used mainly for GPU worker nodes)"
+  default     = ""
+}
+
 variable "disk_size" {
   type        = number
   description = "Size of the EBS volume in GB"

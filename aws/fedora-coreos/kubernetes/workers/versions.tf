@@ -8,5 +8,9 @@ terraform {
       source  = "poseidon/ct"
       version = "~> 0.13"
     }
+    http = {
+      source = "hashicorp/http"
+      version = "~> 3.4"
+    }
   }
 }

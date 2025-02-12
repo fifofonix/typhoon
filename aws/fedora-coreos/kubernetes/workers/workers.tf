@@ -82,7 +82,7 @@ data "aws_iam_instance_profile" "controller_profile" {
 # Worker template
 resource "aws_launch_template" "worker" {
   name_prefix   = "${var.name}-worker"
-  image_id           = var.arch == "arm64" ? data.aws_ami.fedora-coreos-arm[0].image_id : data.aws_ami.fedora-coreos.image_id
+  image_id           = local.ami_id
   instance_type      = var.instance_type_list == null ? var.instance_type : null
 
   dynamic "instance_requirements" {
