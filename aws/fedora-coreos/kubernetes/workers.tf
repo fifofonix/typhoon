@@ -5,7 +5,7 @@ module "workers" {
   # AWS
   vpc_id                       = data.aws_vpc.network.id
   subnet_ids                   = data.aws_subnets.subnets.ids
-  security_groups              = [aws_security_group.worker.id]
+  security_groups              = concat([aws_security_group.worker.id], var.additional_worker_sg_ids)
   privacy_status               = var.privacy_status
 
   # instances
