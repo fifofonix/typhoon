@@ -295,3 +295,9 @@ variable "components" {
   })
   default = null
 }
+
+variable "additional_controller_sg_ids" {
+  type        = list(string)
+  description = "Additional security group IDs to attach to controllers"
+  default     = []
+}
