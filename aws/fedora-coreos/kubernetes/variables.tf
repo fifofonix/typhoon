@@ -300,3 +300,9 @@ variable "service_account_issuer" {
   description = "kube-apiserver service account token issuer (used as an identifier in 'iss' claims)"
   default     = "https://kubernetes.default.svc.cluster.local"
 }
+
+variable "additional_controller_sg_ids" {
+  type        = list(string)
+  description = "Additional security group IDs to attach to controllers"
+  default     = []
+}
