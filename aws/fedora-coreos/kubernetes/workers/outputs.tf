@@ -8,3 +8,7 @@ output "target_group_https" {
   value       = aws_lb_target_group.workers-https.arn
 }
 
+output "target_group_health" {
+  description = "ARN of a target group of workers for overall NLB health check."
+  value       = aws_lb_target_group.workers-health.arn
+}
