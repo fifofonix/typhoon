@@ -63,6 +63,18 @@ resource "aws_lb_listener" "ingress-https" {
   }
 }
 
+# Forward HTTP ingress health requests to workers health
+resource "aws_lb_listener" "ingress-http-health" {
+  load_balancer_arn = aws_lb.nlb.arn
+  protocol          = "TCP"
+  port              = var.worker_nlb_target_health_port
+
+  default_action {
+    type             = "forward"
+    target_group_arn = module.workers.target_group_health
+  }
+}
+
 # Target group of controllers
 resource "aws_lb_target_group" "controllers" {
   name   = "${var.cluster_name}-controllers"
