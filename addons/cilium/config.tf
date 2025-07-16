@@ -191,6 +191,10 @@ resource "kubernetes_config_map" "cilium" {
     write-cni-conf-when-ready       = "/host/etc/cni/net.d/05-cilium.conflist"
     cni-exclusive                   = "true"
     cni-log-file                    = "/var/run/cilium/cilium-cni.log"
+
+    # On VMC on AWS we find the overheads of virtual networks cause networking failures
+    # We shorten the in cluster MTU to avoid this.
+    mtu                             = "1450"
   }
 }
 
