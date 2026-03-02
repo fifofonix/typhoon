@@ -56,6 +56,7 @@ variable "associate_public_ipv4_address" {
   type        = bool
   description = "Associate a public IPv4 address to instances (otherwise, no IPv4 access to instances from the internet and no outbound IPv4 access to the internet)"
   default     = true
+}
 
 variable "instance_type_list" {
   type        = list(string)
